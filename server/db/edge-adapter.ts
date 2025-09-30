@@ -31,8 +31,6 @@ const sql = neon(databaseUrl, {
 export const db = drizzle(sql, {
   schema,
   logger: false, // Disable logging in production for performance
-  // Optimize for performance
-  casing: 'snake_case', // Faster column mapping
 });
 
 // For compatibility with existing code
