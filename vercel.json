@@ -1,7 +1,7 @@
 {
-  "buildCommand": "cd client && bun install && bun run build",
+  "buildCommand": "bun run build",
   "outputDirectory": "client/dist",
-  "installCommand": "bun install",
+  "installCommand": "bun install && cd client && bun install",
   "framework": "vite",
   "rewrites": [
     {
