@@ -3,6 +3,7 @@ import { cors } from 'hono/cors';
 import { cache } from 'hono/cache';
 import { auth } from './lib/auth';
 import { todos } from './routes/todo.routes';
+import { fastSession } from './routes/fast-session';
 
 const app = new Hono().basePath('/api');
 
@@ -12,7 +13,14 @@ app.use('*', cors({
   credentials: true,
 }));
 
-// Add cache middleware for GET requests (except auth)
+// Aggressive caching for session get requests
+app.use('/auth/get-session', cache({
+  cacheName: 'session-cache',
+  cacheControl: 's-maxage=30, stale-while-revalidate=300', // 30s cache, 5min stale
+  wait: false,
+}));
+
+// Add cache middleware for todos
 app.use('/todos/*', cache({
   cacheName: 'todos-cache',
   cacheControl: 's-maxage=10, stale-while-revalidate=59',
@@ -20,6 +28,7 @@ app.use('/todos/*', cache({
 }));
 
 const router = app
+  .route('/auth', fastSession) // Ultra-fast session endpoint
   .on(['POST', 'GET'], '/auth/**', (c) => auth.handler(c.req.raw))
   .route('/todos', todos);
 
