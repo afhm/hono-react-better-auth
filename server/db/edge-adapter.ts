@@ -12,7 +12,6 @@ if (!process.env.DATABASE_URL) {
 // Use pooled connection URL if available (ends with -pooler)
 // This provides server-side connection pooling
 const databaseUrl = process.env.DATABASE_URL;
-const isPooled = databaseUrl.includes('-pooler');
 
 // Create HTTP client - optimal for one-shot queries in Edge Runtime
 // Connection caching is enabled by default for HTTP queries
