@@ -5,7 +5,7 @@ import {
   insertTodo,
   updateTodoById,
 } from '../db/queries';
-import { HonoEnv, type Todo } from '../types';
+import type { HonoEnv, Todo } from '../types';
 import { authMiddleware } from '../middlewares/auth.middleware';
 import { createTodoValidator } from '../validators/create-todo.validator';
 import { updateTodoValidator } from '../validators/update-todo.validator';
