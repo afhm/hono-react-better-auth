@@ -3,7 +3,6 @@ import { cors } from 'hono/cors';
 import { cache } from 'hono/cache';
 import { auth } from './lib/auth';
 import { todos } from './routes/todo.routes';
-import { fastSession } from './routes/fast-session';
 
 const app = new Hono().basePath('/api');
 
@@ -28,7 +27,6 @@ app.use('/todos/*', cache({
 }));
 
 const router = app
-  .route('/auth', fastSession) // Ultra-fast session endpoint
   .on(['POST', 'GET'], '/auth/**', (c) => auth.handler(c.req.raw))
   .route('/todos', todos);
 
