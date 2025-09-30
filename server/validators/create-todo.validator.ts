@@ -16,7 +16,9 @@ export const createTodoValidator = zValidator(
     if (!result.success) {
       return c.json(
         {
-          errors: result.error.issues.map((issue) => issue.message),
+          errors: 'error' in result && result.error
+            ? result.error.issues.map((issue) => issue.message)
+            : ['Validation failed'],
         },
         400
       );
