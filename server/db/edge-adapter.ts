@@ -20,9 +20,8 @@ const sql = neon(databaseUrl, {
   fetchOptions: {
     cache: 'no-store', // Ensure fresh data
   },
-  // Enable connection pooling and keep-alive for better performance
-  poolQueryViaFetch: true,
-  fullResults: false, // Reduce payload size for faster queries
+  // Reduce payload size for faster queries
+  fullResults: false,
 });
 
 export const db = drizzle(sql, {
