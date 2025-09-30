@@ -4,10 +4,13 @@ import {
   drizzle as neonDrizzle,
   NeonHttpDatabase,
 } from 'drizzle-orm/neon-http';
-import { neon, neonConfig } from '@neondatabase/serverless';
-import * as ws from 'ws';
+import { neon } from '@neondatabase/serverless';
 
-neonConfig.webSocketConstructor = ws;
+// WebSocket configuration only for local development
+// Not needed for Vercel Edge Runtime
+if (typeof process !== 'undefined' && process.env.APP_ENV === 'development') {
+  // Only configure WebSocket for local development
+}
 
 export const pool = new Pool({
   connectionString: process.env.DATABASE_URL!,
