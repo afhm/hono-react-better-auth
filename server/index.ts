@@ -12,17 +12,10 @@ app.use('*', cors({
   credentials: true,
 }));
 
-// Aggressive caching for session get requests
+// Only cache session gets, NOT auth operations that change state
 app.use('/auth/get-session', cache({
   cacheName: 'session-cache',
-  cacheControl: 's-maxage=30, stale-while-revalidate=300', // 30s cache, 5min stale
-  wait: false,
-}));
-
-// Add warm-up caching for auth operations
-app.use('/auth/sign-in/*', cache({
-  cacheName: 'auth-cache',
-  cacheControl: 'max-age=0, s-maxage=10', // Brief server cache for repeated operations
+  cacheControl: 's-maxage=10, stale-while-revalidate=60', // Reduced cache for fresh auth state
   wait: false,
 }));
 
