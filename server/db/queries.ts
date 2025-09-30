@@ -1,20 +1,7 @@
 import { todos } from './schema';
 import { eq, desc, and } from 'drizzle-orm';
 import type { NewTodo, Todo } from '../types';
-
-// Use edge-compatible database for production
-const getDb = () => {
-  if (typeof EdgeRuntime !== 'undefined' || process.env.VERCEL) {
-    // Use edge adapter for Vercel deployment
-    const { db } = require('./edge-adapter');
-    return db;
-  }
-  // Use regular db for local development
-  const { db } = require('./db');
-  return db;
-};
-
-const db = getDb();
+import { db } from './edge-adapter'; // Always use edge-compatible adapter
 
 export const getTodosByUserId = async (userId: string) => {
   return await db
