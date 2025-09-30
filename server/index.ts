@@ -26,8 +26,12 @@ app.use('/todos/*', cache({
   wait: false,
 }));
 
+// Mount auth handler
+app.all('/auth/*', async (c) => {
+  return await auth.handler(c.req.raw);
+});
+
 const router = app
-  .on(['POST', 'GET'], '/auth/**', (c) => auth.handler(c.req.raw))
   .route('/todos', todos);
 
 export type AppType = typeof router;
