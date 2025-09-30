@@ -19,6 +19,13 @@ app.use('/auth/get-session', cache({
   wait: false,
 }));
 
+// Add warm-up caching for auth operations
+app.use('/auth/sign-in/*', cache({
+  cacheName: 'auth-cache',
+  cacheControl: 'max-age=0, s-maxage=10', // Brief server cache for repeated operations
+  wait: false,
+}));
+
 // Add cache middleware for todos
 app.use('/todos/*', cache({
   cacheName: 'todos-cache',

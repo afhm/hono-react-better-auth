@@ -19,14 +19,20 @@ const sql = neon(databaseUrl, {
   // Fetch options for better performance
   fetchOptions: {
     cache: 'no-store', // Ensure fresh data
+    // Keep connections alive for better performance
+    keepalive: true,
   },
   // Reduce payload size for faster queries
   fullResults: false,
+  // Enable array mode for faster parsing
+  arrayMode: true,
 });
 
 export const db = drizzle(sql, {
   schema,
-  logger: false // Disable logging in production for performance
+  logger: false, // Disable logging in production for performance
+  // Optimize for performance
+  casing: 'snake_case', // Faster column mapping
 });
 
 // For compatibility with existing code

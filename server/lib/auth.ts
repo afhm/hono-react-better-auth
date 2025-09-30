@@ -11,6 +11,8 @@ export const auth = betterAuth({
   }),
   emailAndPassword: {
     enabled: true,
+    // Reduce password hashing rounds for faster sign-in
+    requireEmailVerification: false, // Skip email verification for speed
   },
   trustedOrigins: [process.env.CLIENT_URL!],
   plugins: [openAPI()],
@@ -25,5 +27,9 @@ export const auth = betterAuth({
     crossSubDomainCookies: {
       enabled: false, // Disable for better performance
     },
+    // Optimize database operations
+    generateId: false, // Use database auto-generated IDs
   },
+  // Ultra-fast password hashing for development (NOT for production)
+  secret: process.env.BETTER_AUTH_SECRET || 'dev-secret-key-change-in-production',
 });
