@@ -1,0 +1,19 @@
+{
+  "buildCommand": "cd client && bun install && bun run build",
+  "outputDirectory": "client/dist",
+  "installCommand": "bun install",
+  "framework": "vite",
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/index"
+    }
+  ],
+  "functions": {
+    "api/index.ts": {
+      "runtime": "edge",
+      "maxDuration": 30,
+      "includeFiles": "server/**"
+    }
+  }
+}
