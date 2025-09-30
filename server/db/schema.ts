@@ -5,6 +5,7 @@ import {
   uuid,
   varchar,
   text,
+  index,
 } from 'drizzle-orm/pg-core';
 
 export const todos = pgTable('todos', {
@@ -18,6 +19,15 @@ export const todos = pgTable('todos', {
   completed: boolean().default(false),
   createdAt: timestamp({ withTimezone: true }).defaultNow(),
   updatedAt: timestamp({ withTimezone: true }).defaultNow(),
+}, (table) => {
+  return {
+    // Index for fetching todos by userId (most common query)
+    userIdIdx: index('todos_user_id_idx').on(table.userId),
+    // Composite index for filtering by user and sorting by date
+    userIdCreatedAtIdx: index('todos_user_id_created_at_idx').on(table.userId, table.createdAt),
+    // Index for filtering by completion status
+    completedIdx: index('todos_completed_idx').on(table.completed),
+  };
 });
 
 export const user = pgTable('user', {
@@ -47,6 +57,13 @@ export const session = pgTable('session', {
   userId: text('user_id')
     .notNull()
     .references(() => user.id, { onDelete: 'cascade' }),
+}, (table) => {
+  return {
+    // Index for session lookups by userId
+    userIdIdx: index('session_user_id_idx').on(table.userId),
+    // Index for session expiration checks
+    expiresAtIdx: index('session_expires_at_idx').on(table.expiresAt),
+  };
 });
 
 export const account = pgTable('account', {
@@ -65,6 +82,13 @@ export const account = pgTable('account', {
   password: text('password'),
   createdAt: timestamp('created_at').notNull(),
   updatedAt: timestamp('updated_at').notNull(),
+}, (table) => {
+  return {
+    // Index for account lookups by userId
+    userIdIdx: index('account_user_id_idx').on(table.userId),
+    // Composite index for provider login lookups
+    providerAccountIdx: index('account_provider_account_idx').on(table.providerId, table.accountId),
+  };
 });
 
 export const verification = pgTable('verification', {
