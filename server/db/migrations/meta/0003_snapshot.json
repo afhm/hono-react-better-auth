@@ -1,6 +1,6 @@
 {
-  "id": "befd989f-c831-4090-be95-389a05744abd",
-  "prevId": "476bf1d4-0094-4f1b-ae64-6d8fac6da9c8",
+  "id": "dcad4573-570d-482a-838e-c376813ee394",
+  "prevId": "befd989f-c831-4090-be95-389a05744abd",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -214,6 +214,12 @@
           "type": "varchar(500)",
           "primaryKey": false,
           "notNull": true
+        },
+        "subtitle": {
+          "name": "subtitle",
+          "type": "varchar(500)",
+          "primaryKey": false,
+          "notNull": false
         },
         "description": {
           "name": "description",

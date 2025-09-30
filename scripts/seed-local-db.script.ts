@@ -17,7 +17,7 @@ const seedDb = async () => {
           values: ['Buy groceries', 'read a book', 'call mom'],
         }),
         description: funcs.valuesFromArray({
-          values: ['at 5pm', 'weekly', 'carefully', undefined],
+          values: ['at 5pm', 'weekly', 'daily', undefined],
         }),
       },
     },
@@ -31,5 +31,5 @@ seedDb()
   })
   .catch((err) => {
     console.error(`failed to seed database:\n${err}`);
-    return pool.end();
+    pool.end().then(() => process.exit(1));
   });

@@ -1,24 +1,26 @@
 import { Link, createFileRoute, useRouter } from '@tanstack/react-router'
-import { CircleX, KeyRound, Mail, User } from 'lucide-react'
 import { useState } from 'react'
+import { CircleX } from 'lucide-react'
 import { authClient } from '../lib/auth-client'
 
 export const Route = createFileRoute('/signup')({
-  component: RouteComponent,
+  component: SignUpPage,
 })
 
-function RouteComponent() {
+function SignUpPage() {
   const router = useRouter()
   const { data: session } = authClient.useSession()
-  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [name, setName] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
+  // Redirect if already authenticated
   if (session) {
     router.navigate({ to: '/todos' })
+    return null
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -28,127 +30,135 @@ function RouteComponent() {
       setError('Passwords do not match')
       return
     }
-    setError('')
-    setLoading(true)
+
+    setIsLoading(true)
+    setError(null)
 
     try {
-      await authClient.signUp.email({
-        name,
+      const result = await authClient.signUp.email({
         email,
         password,
+        name,
+        callbackURL: '/todos',
       })
 
-      router.navigate({
-        to: '/todos',
-      })
+      if (result.error) {
+        setError(result.error.message || 'Signup failed')
+      } else {
+        router.navigate({
+          to: '/todos',
+        })
+      }
     } catch (err) {
-      setError('An unexpected error occured')
-      console.error('Signup failed:', err)
+      setError('An unexpected error occurred')
+      console.error('Signup error:', err)
     } finally {
-      setLoading(false)
+      setIsLoading(false)
     }
   }
 
   return (
-    <div className="flex items-center justify-center bg-base-100 pt-12">
-      <div className="card bg-base-300 max-w-md">
-        <div className="card-body p-8">
-          <div className="card-title text-3xl px-4">Create an Account</div>
-          <p className="text-base-content/70 my-2 text-center">
-            Sign up to get started
-          </p>
+    <div className="bg-base-100 flex flex-grow items-center justify-center p-4 pt-12">
+      <div className="card w-full max-w-md bg-base-300 shadow-xl">
+        <div className="card-body">
+          <div className="text-center mb-6">
+            <h1 className="text-3xl font-bold text-base-content">
+              Create Account
+            </h1>
+            <p className="text-base-content/70 mt-2">Sign up to get started</p>
+          </div>
 
           {error && (
-            <div role="alert" className="alert alert-error">
+            <div className="alert alert-error mb-4">
               <CircleX />
-              <span>Error: {error}</span>
+              <span>{error}</span>
             </div>
           )}
 
           <form onSubmit={handleSubmit}>
-            <div>
-              <label className="input validator">
-                <User />
-                <input
-                  id="full-name"
-                  type="text"
-                  required
-                  placeholder="Full Name"
-                  pattern="[A-Za-z][A-Za-z\-]*"
-                  minLength={3}
-                  maxLength={30}
-                  title="Only letters or dash"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  disabled={loading}
-                />
+            <div className="form-control mb-4">
+              <label className="label">
+                <span className="label-text">Full Name</span>
               </label>
+              <input
+                type="text"
+                placeholder="Enter your full name"
+                className="input input-bordered w-full validator"
+                pattern="[A-Za-z][A-Za-z\- ]*"
+                title="Only letters and dash"
+                minLength={2}
+                maxLength={30}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                disabled={isLoading}
+              />
               <p className="validator-hint hidden">
-                3 to 30 characters only letters or dashes
+                3 to 30 characters with only letters or dash
               </p>
             </div>
 
-            <div className="mt-3">
-              <label className="input validator">
-                <Mail />
-                <input
-                  id="email"
-                  type="email"
-                  placeholder="mail@site.com"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  disabled={loading}
-                />
+            <div className="form-control mb-4">
+              <label className="label">
+                <span className="label-text">Email</span>
               </label>
-              <div className="validator-hint hidden">
-                Enter valid email address
-              </div>
+              <input
+                type="email"
+                placeholder="Enter your email"
+                className="input input-bordered w-full validator"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                disabled={isLoading}
+              />
+              <p className="validator-hint hidden">Should be a valid email</p>
             </div>
 
-            <div className="mt-3">
-              <label className="input validator">
-                <KeyRound />
-                <input
-                  id="password"
-                  type="password"
-                  required
-                  placeholder="Password"
-                  minLength={8}
-                  title="Must be more than 8 characters"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  disabled={loading}
-                />
+            <div className="form-control mb-4">
+              <label className="label">
+                <span className="label-text">Password</span>
               </label>
-              <p className="validator-hint hidden">Must be 8 characters long</p>
+              <input
+                type="password"
+                placeholder="Enter your password"
+                className="input input-bordered w-full validator"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                disabled={isLoading}
+                minLength={8}
+              />
+              <p className="validator-hint hidden">
+                Should be at least 8 characters
+              </p>
             </div>
 
-            <div className="mt-3">
-              <label className="input validator">
-                <KeyRound />
-                <input
-                  id="confirm-password"
-                  type="password"
-                  required
-                  placeholder="Confirm Password"
-                  minLength={8}
-                  title="Must be more than 8 characters"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  disabled={loading}
-                />
+            <div className="form-control mb-8">
+              <label className="label">
+                <span className="label-text">Confirm Password</span>
               </label>
-              <p className="validator-hint hidden">Must be 8 characters long</p>
+              <input
+                type="password"
+                placeholder="Confirm your password"
+                className="input input-bordered w-full validator"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+                disabled={isLoading}
+                minLength={8}
+              />
+              <p className="validator-hint hidden">
+                Should be at least 8 characters
+              </p>
             </div>
 
-            <div className="card-actions mt-4">
+            <div className="form-control mt-2">
               <button
                 type="submit"
-                className="btn btn-primary w-full"
-                disabled={loading}
+                className={'btn btn-primary w-full'}
+                disabled={isLoading}
               >
-                {loading ? (
+                {isLoading ? (
                   <>
                     <span className="loading loading-spinner loading-sm text-primary"></span>
                     <span className="ml-2 text-primary">
@@ -160,16 +170,16 @@ function RouteComponent() {
                 )}
               </button>
             </div>
-
-            <div className="mt-6 text-center">
-              <p className="text-base-content/70">
-                Already have an account?{' '}
-                <Link to="/signin" className="link link-primary">
-                  Sign in
-                </Link>
-              </p>
-            </div>
           </form>
+
+          <div className="text-center mt-6">
+            <p className="text-base-content/70">
+              Already have an account?{' '}
+              <Link to="/signin" className="link link-primary">
+                Sign in
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
     </div>

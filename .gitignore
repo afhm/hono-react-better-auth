@@ -1,5 +1,6 @@
 # deps
 node_modules/
+.vscode
 .DS_Store
 dist
 dist-ssr
@@ -8,4 +9,3 @@ count.txt
 .env
 .nitro
 .tanstack
-.vscode
