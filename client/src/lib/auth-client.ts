@@ -6,11 +6,4 @@ export const authClient = createAuthClient({
   fetchOptions: {
     cache: 'force-cache', // Aggressive client-side caching
   },
-  session: {
-    // Use fast session endpoint
-    cookieCache: {
-      enabled: true,
-      maxAge: 60 * 5, // 5 minutes client cache
-    },
-  },
 })
